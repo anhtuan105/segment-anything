@@ -20,6 +20,7 @@ interface contextProps {
     maskImg: HTMLImageElement | null,
     setMaskImg: (e: HTMLImageElement | null) => void
   ];
+  apply: [apply: boolean, setApply: (e: boolean) => void];
 }
 
 const AppContext = createContext<contextProps | null>(null);

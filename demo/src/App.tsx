@@ -29,9 +29,11 @@ const App = () => {
     clicks: [clicks],
     image: [, setImage],
     maskImg: [, setMaskImg],
+    apply: [, setApply],
   } = useContext(AppContext)!;
   const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
   const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
+  const alpha = 100;
 
   // The ONNX model expects the input to be rescaled to 1024.
   // The modelScale state variable keeps track of the scale values.
@@ -129,25 +131,28 @@ const App = () => {
   };
 
   const onSelectColor = (index: number) => {
-    let color = [0, 128, 0, 255];
+    let color = [0, 128, 0, alpha];
     switch (index) {
       case 0:
-        color = [0, 128, 0, 255];
+        color = [0, 128, 0, alpha];
         break;
       case 1:
-        color = [255, 255, 0, 255];
+        color = [255, 255, 0, alpha];
         break;
       case 2:
-        color = [255, 0, 0, 255];
+        color = [255, 0, 0, alpha];
         break;
       case 3:
-        color = [135, 206, 235, 255];
+        color = [135, 206, 235, alpha];
         break;
       case 4:
-        color = [128, 0, 128, 255];
+        color = [128, 0, 128, alpha];
         break;
       case 5:
-        color = [255, 192, 203, 255];
+        color = [255, 192, 203, alpha];
+        break;
+      case 6:
+        color = [0, 0, 0, 255];
         break;
       default:
         break;
@@ -183,6 +188,15 @@ const App = () => {
           className="button pink"
           onClick={() => onSelectColor(5)}
         ></button>
+        <button
+          className="button black"
+          onClick={() => onSelectColor(6)}
+        ></button>
+        <div>
+          <button className="button skyblue" onClick={() => setApply(true)}>
+            Apply
+          </button>
+        </div>
       </div>
       <Stage />;
     </>

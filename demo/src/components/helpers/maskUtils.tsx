@@ -27,9 +27,12 @@ function arrayToImageData(input: any, width: number, height: number) {
 
 // Use a Canvas element to produce an image from ImageData
 function imageDataToImage(imageData: ImageData) {
+  console.log("000000000");
+  console.log(imageData);
   const canvas = imageDataToCanvas(imageData);
   const image = new Image();
   image.src = canvas.toDataURL();
+  console.log(image.src);
   return image;
 }
 
