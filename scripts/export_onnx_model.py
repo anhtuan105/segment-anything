@@ -8,7 +8,9 @@ import torch
 
 from segment_anything import sam_model_registry
 from segment_anything.utils.onnx import SamOnnxModel
-import cv2
+from segment_anything import sam_model_registry, SamPredictor
+import numpy as np
+import cv2, os
 import pdb
 import argparse
 import warnings
@@ -139,7 +141,7 @@ def run_export(
     mask_input_size = [4 * x for x in embed_size]
     image = cv2.imread(input)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    height, width = image.shape
+    height, width, channels = image.shape
 
     dummy_inputs = {
         "image_embeddings": torch.randn(1, embed_dim, *embed_size, dtype=torch.float),
@@ -176,6 +178,16 @@ def run_export(
                 output_names=output_names,
                 dynamic_axes=dynamic_axes,
             )
+
+    image_name = os.path.basename(input)
+    new_file_name = os.path.splitext(image_name)[0] + '_embedding.npy'
+    new_file_path = os.path.join("embedding/", new_file_name)
+    sam.to(device='cpu')
+    predictor = SamPredictor(sam)
+    predictor.set_image(image)
+    image_embedding = predictor.get_image_embedding().cpu().numpy()
+    image_embedding.shape
+    np.save(new_file_path, image_embedding)
 
     if onnxruntime_exists:
         ort_inputs = {k: to_numpy(v) for k, v in dummy_inputs.items()}
