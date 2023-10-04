@@ -18,7 +18,7 @@ const modelData = ({ clicks, tensor, modelScale }: modeDataProps) => {
   if (clicks) {
     let n = clicks.length;
 
-    // If there is no box input, a single padding point with 
+    // If there is no box input, a single padding point with
     // label -1 and coordinates (0.0, 0.0) should be concatenated
     // so initialize the array to support (n + 1) points.
     pointCoords = new Float32Array(2 * (n + 1));

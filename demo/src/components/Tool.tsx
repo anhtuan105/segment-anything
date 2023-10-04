@@ -19,6 +19,7 @@ const Tool = ({ handleMouseMove }: ToolProps) => {
   // width or the height of the page and setup a ResizeObserver to
   // monitor changes in the size of the page
   const [shouldFitToWidth, setShouldFitToWidth] = useState(true);
+  const [isPause, setIsPause] = useState(false);
   const bodyEl = document.body;
   const fitToPage = () => {
     if (!image) return;
@@ -42,16 +43,24 @@ const Tool = ({ handleMouseMove }: ToolProps) => {
   }, [image]);
 
   const imageClasses = "";
-  const maskImageClasses = `absolute opacity-50 pointer-events-none`;
+  const maskImageClasses = `absolute opacity-50 pointer-events-none invert(1) sepia(100%) saturate(10000%) hue-rotate(45deg)`;
 
   // Render the image and the predicted mask image on top
   return (
     <>
       {image && (
         <img
-          onMouseMove={handleMouseMove}
-          onMouseOut={() => _.defer(() => setMaskImg(null))}
+          onMouseMove={(e) => {
+            if (isPause) {
+              return;
+            }
+            handleMouseMove(e);
+          }}
+          // onMouseOut={() => _.defer(() => setMaskImg(null))}
           onTouchStart={handleMouseMove}
+          onClick={() => {
+            setIsPause((pre) => !pre);
+          }}
           src={image.src}
           className={`${
             shouldFitToWidth ? "w-full" : "h-full"

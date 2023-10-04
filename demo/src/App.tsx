@@ -16,6 +16,8 @@ import AppContext from "./components/hooks/createContext";
 const ort = require("onnxruntime-web");
 /* @ts-ignore */
 import npyjs from "npyjs";
+import "./Button.css"; // Import CSS
+import AppManager from "./AppManager";
 
 // Define image, embedding and model paths
 const IMAGE_PATH = "/assets/data/mau_text.png";
@@ -31,7 +33,7 @@ const App = () => {
   const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
   const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
 
-  // The ONNX model expects the input to be rescaled to 1024. 
+  // The ONNX model expects the input to be rescaled to 1024.
   // The modelScale state variable keeps track of the scale values.
   const [modelScale, setModelScale] = useState<modelScaleProps | null>(null);
 
@@ -68,12 +70,12 @@ const App = () => {
       img.onload = () => {
         const { height, width, samScale } = handleImageScale(img);
         setModelScale({
-          height: height,  // original image height
-          width: width,  // original image width
+          height: height, // original image height
+          width: width, // original image width
           samScale: samScale, // scaling factor for image which has been resized to longest side 1024
         });
-        img.width = width; 
-        img.height = height; 
+        img.width = width;
+        img.height = height;
         setImage(img);
       };
     } catch (error) {
@@ -81,7 +83,7 @@ const App = () => {
     }
   };
 
-  // Decode a Numpy file into a tensor. 
+  // Decode a Numpy file into a tensor.
   const loadNpyTensor = async (tensorFile: string, dType: string) => {
     let npLoader = new npyjs();
     const npArray = await npLoader.load(tensorFile);
@@ -104,7 +106,7 @@ const App = () => {
       )
         return;
       else {
-        // Preapre the model input in the correct format for SAM. 
+        // Preapre the model input in the correct format for SAM.
         // The modelData function is from onnxModelAPI.tsx.
         const feeds = modelData({
           clicks,
@@ -115,16 +117,76 @@ const App = () => {
         // Run the SAM ONNX model with the feeds returned from modelData()
         const results = await model.run(feeds);
         const output = results[model.outputNames[0]];
-        // The predicted mask returned from the ONNX model is an array which is 
+        // The predicted mask returned from the ONNX model is an array which is
         // rendered as an HTML image using onnxMaskToImage() from maskUtils.tsx.
-        setMaskImg(onnxMaskToImage(output.data, output.dims[2], output.dims[3]));
+        setMaskImg(
+          onnxMaskToImage(output.data, output.dims[2], output.dims[3])
+        );
       }
     } catch (e) {
       console.log(e);
     }
   };
 
-  return <Stage />;
+  const onSelectColor = (index: number) => {
+    let color = [0, 128, 0, 255];
+    switch (index) {
+      case 0:
+        color = [0, 128, 0, 255];
+        break;
+      case 1:
+        color = [255, 255, 0, 255];
+        break;
+      case 2:
+        color = [255, 0, 0, 255];
+        break;
+      case 3:
+        color = [135, 206, 235, 255];
+        break;
+      case 4:
+        color = [128, 0, 128, 255];
+        break;
+      case 5:
+        color = [255, 192, 203, 255];
+        break;
+      default:
+        break;
+    }
+    AppManager.shared.color = color;
+    runONNX();
+  };
+
+  return (
+    <>
+      <div>
+        <button
+          className="button green"
+          onClick={() => onSelectColor(0)}
+        ></button>
+        <button
+          className="button yellow"
+          onClick={() => onSelectColor(1)}
+        ></button>
+        <button
+          className="button red"
+          onClick={() => onSelectColor(2)}
+        ></button>
+        <button
+          className="button skyblue"
+          onClick={() => onSelectColor(3)}
+        ></button>
+        <button
+          className="button purple"
+          onClick={() => onSelectColor(4)}
+        ></button>
+        <button
+          className="button pink"
+          onClick={() => onSelectColor(5)}
+        ></button>
+      </div>
+      <Stage />;
+    </>
+  );
 };
 
 export default App;

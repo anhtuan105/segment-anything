@@ -56,7 +56,8 @@
     "onnxruntime-web": "^1.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "underscore": "^1.13.6",
-    "react-refresh": "^0.14.0"
+    "react-refresh": "^0.14.0",
+    "reimg": "^1.0.0",
+    "underscore": "^1.13.6"
   }
 }
