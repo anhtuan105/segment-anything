@@ -8,7 +8,10 @@ import torch
 
 from segment_anything import sam_model_registry
 from segment_anything.utils.onnx import SamOnnxModel
-
+from segment_anything import sam_model_registry, SamPredictor
+import numpy as np
+import cv2, os
+import pdb
 import argparse
 import warnings
 
@@ -25,6 +28,13 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument(
     "--checkpoint", type=str, required=True, help="The path to the SAM model checkpoint."
+)
+
+parser.add_argument(
+    "--input",
+    type=str,
+    required=True,
+    help="Path to either a single input image or folder of images.",
 )
 
 parser.add_argument(
@@ -97,6 +107,7 @@ parser.add_argument(
 def run_export(
     model_type: str,
     checkpoint: str,
+    input: str,
     output: str,
     opset: int,
     return_single_mask: bool,
@@ -105,6 +116,7 @@ def run_export(
     return_extra_metrics=False,
 ):
     print("Loading model...")
+    print(input)
     sam = sam_model_registry[model_type](checkpoint=checkpoint)
 
     onnx_model = SamOnnxModel(
@@ -127,6 +139,10 @@ def run_export(
     embed_dim = sam.prompt_encoder.embed_dim
     embed_size = sam.prompt_encoder.image_embedding_size
     mask_input_size = [4 * x for x in embed_size]
+    image = cv2.imread(input)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    height, width, channels = image.shape
+
     dummy_inputs = {
         "image_embeddings": torch.randn(1, embed_dim, *embed_size, dtype=torch.float),
         "point_coords": torch.randint(low=0, high=1024, size=(1, 5, 2), dtype=torch.float),
@@ -136,7 +152,7 @@ def run_export(
         # "orig_im_size": torch.tensor([1500, 2250], dtype=torch.float),
         # "orig_im_size": torch.tensor([500, 375], dtype=torch.float),
         # "orig_im_size": torch.tensor([1455, 970], dtype=torch.float),
-        "orig_im_size": torch.tensor([1008, 1008], dtype=torch.float),
+        "orig_im_size": torch.tensor([width, height], dtype=torch.float),
 
 
     }
@@ -163,6 +179,16 @@ def run_export(
                 dynamic_axes=dynamic_axes,
             )
 
+    image_name = os.path.basename(input)
+    new_file_name = os.path.splitext(image_name)[0] + '_embedding.npy'
+    new_file_path = os.path.join("embedding/", new_file_name)
+    sam.to(device='cpu')
+    predictor = SamPredictor(sam)
+    predictor.set_image(image)
+    image_embedding = predictor.get_image_embedding().cpu().numpy()
+    image_embedding.shape
+    np.save(new_file_path, image_embedding)
+
     if onnxruntime_exists:
         ort_inputs = {k: to_numpy(v) for k, v in dummy_inputs.items()}
         # set cpu provider default
@@ -181,6 +207,7 @@ if __name__ == "__main__":
     run_export(
         model_type=args.model_type,
         checkpoint=args.checkpoint,
+        input=args.input,
         output=args.output,
         opset=args.opset,
         return_single_mask=args.return_single_mask,
