@@ -1,0 +1,46 @@
+/* Button.css */
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.green {
+  background-color: green;
+  color: white;
+}
+
+.yellow {
+  background-color: yellow;
+  color: black;
+}
+
+.red {
+  background-color: red;
+  color: white;
+}
+
+.skyblue {
+  background-color: skyblue;
+  color: black;
+}
+
+.purple {
+  background-color: purple;
+  color: white;
+}
+
+.pink {
+  background-color: pink;
+  color: black;
+}
+
+.black {
+  background-color: black;
+  color: black;
+}

@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    image: meta-segment
+    # expose:
+    #   - 5001
+    ports:
+      - 8001:8000
+    container_name: meta-segment-app
+    volumes:
+      - ./:/main_volumn_data
+    # restart: always
+    # environment:
+    #   TZ: Asia/Tokyo
+    #   OPEN_AI_KEY: ${OPEN_AI_KEY}
+    #   GPT_MODEL: ${GPT_MODEL}
