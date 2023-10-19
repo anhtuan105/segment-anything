@@ -5,6 +5,7 @@ from fastapi import FastAPI,File, UploadFile
 from typing import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 
+from fastapi.responses import FileResponse
 
 
 app = FastAPI()
@@ -103,3 +104,18 @@ def copy_image(image_path):
 def copy_onnx_model():
     subprocess.run(["cp", "model/upload_model.onnx","demo/src/assets/model/upload_model.onnx"]) 
     subprocess.run(["cp", "embedding/image_upload_embedding.npy","demo/src/assets/embedding/upload_embedding.npy"]) 
+
+
+file_path = "public/mau_text"
+
+import shutil
+
+@app.get("/download_file")
+def download_file():
+    
+    # shutil.make_archive("segment.zip", 'zip', file_path)
+
+    # return {"filename": "segment.zip"}
+    zip_file = "public/segment.zip"
+    return FileResponse(path=zip_file, filename="segment.zip")
+

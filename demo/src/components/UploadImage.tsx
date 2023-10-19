@@ -3,6 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, message, Upload, Spin, Flex } from 'antd';
 import axios from 'axios';
+import fileDownload from 'js-file-download';
 
 
 const props: UploadProps = {
@@ -52,7 +53,7 @@ const UploadImage = () => {
 
             await sleep(SLEEP)
             console.log('====================================');
-            console.log("RELOAD PAGE: ",SLEEP);
+            console.log("RELOAD PAGE: ", SLEEP);
             console.log('====================================');
             window.location.reload();
 
@@ -65,11 +66,33 @@ const UploadImage = () => {
         }
     }
 
+    const onButtonClick = () => {
+
+        axios.get("https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=1548&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", {
+            responseType: 'blob'
+        })
+            .then((res) => {
+                console.log('====================================');
+                console.log("RES: ",res);
+                console.log('====================================');
+                fileDownload(res.data,"downloadTest")
+            })
+            .catch((err) => {
+                console.log('====================================');
+                console.log("ERROR: ", err);
+                console.log('====================================');
+            })
+    };
+
+
     return (
-        <Flex gap="middle" vertical style={{marginTop:50}}>
+        <Flex gap="middle" vertical style={{ marginTop: 50 }}>
             <Upload onChange={on_upload_image} style={{ alignSelf: 'center' }} >
                 <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
+
+            <Button icon={<UploadOutlined />} onClick={onButtonClick}>Click to Download</Button>
+
             <Spin style={{ marginTop: 50, marginBottom: 50 }} spinning={isSpinning} />
         </Flex>
     )
