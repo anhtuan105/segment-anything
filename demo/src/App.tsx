@@ -30,12 +30,16 @@ import helper from "./components/helpers/helper";
 let IMAGE_PATH = "/assets/data/image_upload.png";
 let IMAGE_EMBEDDING = "/assets/embedding/upload_embedding.npy";
 let MODEL_DIR = "/assets/model/upload_model.onnx";
+// Define image, embedding and model paths
+// const IMAGE_PATH = "/assets/data/mau_text.png";
+// const IMAGE_EMBEDDING = "/assets/data/mau_text.npy";
+// const MODEL_DIR = "/model/mau_text.onnx";
 
 const App = () => {
   const {
     clicks: [clicks],
     image: [, setImage],
-    maskImg: [, setMaskImg],
+    maskImg: [maskImg, setMaskImg],
     apply: [, setApply],
   } = useContext(AppContext)!;
   const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
@@ -187,6 +191,15 @@ const App = () => {
     runONNX();
   };
 
+  const downloadImage = () => {
+    console.log(`${maskImg?.src}`);
+    const link = document.createElement("a");
+    link.href = `${maskImg?.src}`;
+    link.download = "image.png";
+    link.click();
+    setMaskImg(null);
+  };
+
   return (
     <>
       <div>
@@ -222,10 +235,11 @@ const App = () => {
           <button className="button skyblue" onClick={() => setApply(true)}>
             Apply
           </button>
+          <button className="button skyblue" onClick={() => downloadImage()}>
+            Download mask
+          </button>
         </div>
       </div>
-      <UploadImage />
-
       <Stage />;
     </>
   );
