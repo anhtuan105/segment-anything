@@ -82,7 +82,7 @@ const UploadImage = () => {
                 console.log('====================================');
                 console.log("RES: ", res);
                 console.log('====================================');
-                fileDownload(res.data, "downloadTest")
+                fileDownload(res.data, "test.zip")
             })
             .catch((err) => {
                 console.log('====================================');
