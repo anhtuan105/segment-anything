@@ -114,6 +114,7 @@ def run_export(
     gelu_approximate: bool = False,
     use_stability_score: bool = False,
     return_extra_metrics=False,
+    user_id: str = ""
 ):
     print("Loading model...")
     print(input)
@@ -180,6 +181,8 @@ def run_export(
 
     image_name = os.path.basename(input)
     new_file_name = os.path.splitext(image_name)[0] + '_embedding.npy'
+    new_file_name = f"{user_id}" + new_file_name
+        
     new_file_path = os.path.join("embedding/", new_file_name)
     sam.to(device='cpu')
     predictor = SamPredictor(sam)
