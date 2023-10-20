@@ -52,26 +52,15 @@ async def upload_image(uploaded_file: UploadFile):
 
 
 @app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile,user_id:str):
+async def create_upload_file(file: UploadFile):
 
-    image_path = await upload_image(uploaded_file=file)
-    if user_id is None:
-        user_id = "1"
+    image_path = await  upload_image(uploaded_file=file)
     print("image_path: ",image_path)
-    print("User id: ",user_id)
-    
-    output_onnx_model_name = f"model/{user_id}_model.onnx"
-    
-    # return {
-    #     "user_id":user_id,
-    #     "image_path":image_path,
-    #     "output_path":output_onnx_model_name
-    # }
     
     model_type = "vit_b"
     checkpoint = "checkpoint/sam_vit_b_01ec64.pth"  
     input_image = image_path
-    output_onnx_model = output_onnx_model_name
+    output_onnx_model = "model/upload_model.onnx"
     opset = 17
     return_single_mask = False
     gelu_approximate = False
@@ -91,11 +80,10 @@ async def create_upload_file(file: UploadFile,user_id:str):
             gelu_approximate=gelu_approximate,
             use_stability_score=use_stability_score,
             return_extra_metrics=return_extra_metrics,
-            user_id=user_id
         )
         
-        copy_onnx_model(user_id)
-        copy_image(image_path,user_id)
+        copy_onnx_model()
+        copy_image(image_path)
 
     except Exception as e:
         print("ERROR: ",e)
@@ -111,21 +99,33 @@ async def create_upload_file(file: UploadFile,user_id:str):
 # let imageEmbeddingPath = `/assets/embedding/${user_id}_upload_embedding.npy`;
 # let modelOnnxPath = `/assets/model/${user_id}_upload_model.onnx`;
 
-def copy_image(image_path,user_id):
+
+def copy_image(image_path):
     print("COPY IMAGE SUCCESS: ",image_path)
-    destination_path = f"demo/src/assets/data/{user_id}_image_upload.png"
-    subprocess.run(["cp",image_path,destination_path]) 
+    subprocess.run(["cp",image_path,"demo/src/assets/data/image_upload.png"]) 
     print("COPY IMAGE SUCCESS")
 
 
-def copy_onnx_model(user_id):
+def copy_onnx_model():
+    subprocess.run(["cp", "model/upload_model.onnx","demo/src/assets/model/upload_model.onnx"]) 
+    subprocess.run(["cp", "embedding/image_upload_embedding.npy","demo/src/assets/embedding/upload_embedding.npy"]) 
     
-    model_destination_path = f"demo/src/assets/model/{user_id}_upload_model.onnx"
-    embedding_destination_path = f"demo/src/assets/embedding/{user_id}_upload_embedding.npy"
+    
+# def copy_image(image_path,user_id):
+#     print("COPY IMAGE SUCCESS: ",image_path)
+#     destination_path = f"demo/src/assets/data/{user_id}_image_upload.png"
+#     subprocess.run(["cp",image_path,destination_path]) 
+#     print("COPY IMAGE SUCCESS")
 
 
-    subprocess.run(["cp", f"model/{user_id}_model.onnx",model_destination_path]) 
-    subprocess.run(["cp", "embedding/image_upload_embedding.npy",embedding_destination_path]) 
+# def copy_onnx_model(user_id):
+    
+#     model_destination_path = f"demo/src/assets/model/{user_id}_upload_model.onnx"
+#     embedding_destination_path = f"demo/src/assets/embedding/{user_id}_upload_embedding.npy"
+
+
+#     subprocess.run(["cp", f"model/{user_id}_model.onnx",model_destination_path]) 
+#     subprocess.run(["cp", "embedding/image_upload_embedding.npy",embedding_destination_path]) 
 
 
 file_path = "public/mau_text2"

@@ -42,9 +42,9 @@ const App = () => {
   const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
   const alpha = 100;
 
-  // const [imagePath,setImagePath] = useState(IMAGE_PATH)
-  // const [imageEmbeddingPath,setImageEmbeddingPath] = useState(IMAGE_EMBEDDING)
-  // const [modelOnnxPath,setModelOnnxPath] = useState(MODEL_DIR)
+  const [imagePath,setImagePath] = useState(IMAGE_PATH)
+  const [imageEmbeddingPath,setImageEmbeddingPath] = useState(IMAGE_EMBEDDING)
+  const [modelOnnxPath,setModelOnnxPath] = useState(MODEL_DIR)
 
 
   // The ONNX model expects the input to be rescaled to 1024.
@@ -58,13 +58,13 @@ const App = () => {
     let user_id = helper.get_user_identification()
     console.log("USER_ID : ", user_id);
     user_id = "11"
-    let imagePath = `/assets/data/${user_id}_image_upload.png`;
-    let imageEmbeddingPath = `/assets/embedding/${user_id}_upload_embedding.npy`;
-    let modelOnnxPath = `/assets/model/${user_id}_upload_model.onnx`;
+    // let imagePath = `/assets/data/${user_id}_image_upload.png`;
+    // let imageEmbeddingPath = `/assets/embedding/${user_id}_upload_embedding.npy`;
+    // let modelOnnxPath = `/assets/model/${user_id}_upload_model.onnx`;
 
-    console.log("imagePath",imagePath);
-    console.log("imageEmbeddingPath",imageEmbeddingPath);
-    console.log("modelOnnxPath",modelOnnxPath);
+    // console.log("imagePath",imagePath);
+    // console.log("imageEmbeddingPath",imageEmbeddingPath);
+    // console.log("modelOnnxPath",modelOnnxPath);
     
 
 

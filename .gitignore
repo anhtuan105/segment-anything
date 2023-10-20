@@ -47,3 +47,8 @@ model
 checkpoint
 
 venv
+assets/segment
+media/
+public
+notebooks
+embedding
