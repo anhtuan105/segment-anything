@@ -101,7 +101,7 @@ const UploadImage = () => {
                 <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
 
-            <Button icon={<UploadOutlined />} onClick={onButtonClick}>Click to Download</Button>
+            {/* <Button icon={<UploadOutlined />} onClick={onButtonClick}>Click to Download</Button> */}
 
             <Spin style={{ marginTop: 50, marginBottom: 50 }} spinning={isSpinning} />
         </Flex>
