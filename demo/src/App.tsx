@@ -167,6 +167,7 @@ const App = () => {
     link.href = `${maskImg?.src}`;
     link.download = "image.png";
     link.click();
+    setMaskImg(null);
   };
 
   return (
