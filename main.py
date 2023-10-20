@@ -128,15 +128,15 @@ def copy_onnx_model(user_id):
     subprocess.run(["cp", "embedding/image_upload_embedding.npy",embedding_destination_path]) 
 
 
-file_path = "public/mau_text"
+file_path = "public/mau_text2"
 
 import shutil
 def export_mask_image_folder():
     try :
-        image_input = "media/image_upload.png.png"
+        image_input = "media/image_upload.png"
         image_output = "assets/segment"
-        model_type = "vit_h"
-        checkpoint = "checkpoint/sam_vit_h_4b8939.pth"
+        model_type = "vit_b"
+        checkpoint = "checkpoint/sam_vit_b_01ec64.pth"
 
         subprocess.run(["python", "scripts/amg.py", "--checkpoint", checkpoint, "--model-type", model_type, "--input", image_input, "--output", image_output, "--device=cpu"])
         print("DONE")
@@ -148,10 +148,10 @@ def export_mask_image_folder():
 @app.get("/download_file")
 def download_file():
     
-    export_mask_image_folder()
-    # shutil.make_archive("segment.zip", 'zip', file_path)
+    subprocess.run(["rm","-rf","assets/segment/image_upload"])
+    segmeng_path = export_mask_image_folder()
+    shutil.make_archive("media/segment", 'zip', "assets/segment/image_upload")
     # 
-    # return {"filename": "segment.zip"}
-    zip_file = "public/segment.zip"
+    zip_file = "media/segment.zip"
     return FileResponse(path=zip_file, filename="segment.zip")
 
