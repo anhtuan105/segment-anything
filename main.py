@@ -131,10 +131,19 @@ def copy_onnx_model(user_id):
 file_path = "public/mau_text"
 
 import shutil
-
-
 def export_mask_image_folder():
-    pass
+    try :
+        image_input = "media/image_upload.png.png"
+        image_output = "assets/segment"
+        model_type = "vit_h"
+        checkpoint = "checkpoint/sam_vit_h_4b8939.pth"
+
+        subprocess.run(["python", "scripts/amg.py", "--checkpoint", checkpoint, "--model-type", model_type, "--input", image_input, "--output", image_output, "--device=cpu"])
+        print("DONE")
+        pass
+    except Exception as e:
+        print("ERROR: ",e)
+        raise e
 
 @app.get("/download_file")
 def download_file():
