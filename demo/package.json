@@ -61,6 +61,7 @@
     "react-dom": "^18.2.0",
     "react-refresh": "^0.14.0",
     "reimg": "^1.0.0",
-    "underscore": "^1.13.6"
+    "underscore": "^1.13.6",
+    "uuidv4": "^6.2.13"
   }
 }

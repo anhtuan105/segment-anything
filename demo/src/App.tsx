@@ -20,15 +20,16 @@ import "./Button.css"; // Import CSS
 import AppManager from "./AppManager";
 
 import UploadImage from "./components/UploadImage";
+import helper from "./components/helpers/helper";
 
 // Define image, embedding and model paths
 // const IMAGE_PATH = "/assets/data/mau_text.png";
 // const IMAGE_EMBEDDING = "/assets/data/mau_text.npy";
 // const MODEL_DIR = "/model/mau_text.onnx";
 
-const IMAGE_PATH = "/assets/data/image_upload.png";
-const IMAGE_EMBEDDING = "/assets/embedding/upload_embedding.npy";
-const MODEL_DIR = "/assets/model/upload_model.onnx";
+let IMAGE_PATH = "/assets/data/image_upload.png";
+let IMAGE_EMBEDDING = "/assets/embedding/upload_embedding.npy";
+let MODEL_DIR = "/assets/model/upload_model.onnx";
 
 const App = () => {
   const {
@@ -41,6 +42,11 @@ const App = () => {
   const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
   const alpha = 100;
 
+  // const [imagePath,setImagePath] = useState(IMAGE_PATH)
+  // const [imageEmbeddingPath,setImageEmbeddingPath] = useState(IMAGE_EMBEDDING)
+  // const [modelOnnxPath,setModelOnnxPath] = useState(MODEL_DIR)
+
+
   // The ONNX model expects the input to be rescaled to 1024.
   // The modelScale state variable keeps track of the scale values.
   const [modelScale, setModelScale] = useState<modelScaleProps | null>(null);
@@ -48,11 +54,25 @@ const App = () => {
   // Initialize the ONNX model. load the image, and load the SAM
   // pre-computed image embedding
   useEffect(() => {
+
+    let user_id = helper.get_user_identification()
+    console.log("USER_ID : ", user_id);
+    user_id = "11"
+    let imagePath = `/assets/data/${user_id}_image_upload.png`;
+    let imageEmbeddingPath = `/assets/embedding/${user_id}_upload_embedding.npy`;
+    let modelOnnxPath = `/assets/model/${user_id}_upload_model.onnx`;
+
+    console.log("imagePath",imagePath);
+    console.log("imageEmbeddingPath",imageEmbeddingPath);
+    console.log("modelOnnxPath",modelOnnxPath);
+    
+
+
     // Initialize the ONNX model
     const initModel = async () => {
       try {
-        if (MODEL_DIR === undefined) return;
-        const URL: string = MODEL_DIR;
+        if (modelOnnxPath === undefined) return;
+        const URL: string = modelOnnxPath;
         const model = await InferenceSession.create(URL);
         setModel(model);
       } catch (e) {
@@ -62,11 +82,11 @@ const App = () => {
     initModel();
 
     // Load the image
-    const url = new URL(IMAGE_PATH, location.origin);
+    const url = new URL(imagePath, location.origin);
     loadImage(url);
 
     // Load the Segment Anything pre-computed embedding
-    Promise.resolve(loadNpyTensor(IMAGE_EMBEDDING, "float32")).then(
+    Promise.resolve(loadNpyTensor(imageEmbeddingPath, "float32")).then(
       (embedding) => setTensor(embedding)
     );
   }, []);
@@ -204,7 +224,7 @@ const App = () => {
           </button>
         </div>
       </div>
-      <UploadImage/>
+      <UploadImage />
 
       <Stage />;
     </>

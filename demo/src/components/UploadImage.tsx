@@ -35,6 +35,8 @@ const props: UploadProps = {
 
 const SLEEP = 15000
 
+import helper from './helpers/helper';
+
 const UploadImage = () => {
     const [isSpinning, setIsSpinning] = useState(false)
 
@@ -48,6 +50,7 @@ const UploadImage = () => {
             setIsSpinning(true)
             const form = new FormData();
             form.append('file', file.file.originFileObj);
+            form.append('user_id',helper.get_user_identification())
 
             await axios.post('http://127.0.0.1:8001/uploadfile/', form)
 
@@ -68,20 +71,23 @@ const UploadImage = () => {
 
     const onButtonClick = () => {
 
-        axios.get("https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=1548&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", {
-            responseType: 'blob'
-        })
-            .then((res) => {
-                console.log('====================================');
-                console.log("RES: ",res);
-                console.log('====================================');
-                fileDownload(res.data,"downloadTest")
-            })
-            .catch((err) => {
-                console.log('====================================');
-                console.log("ERROR: ", err);
-                console.log('====================================');
-            })
+
+        helper.set_user_identification()
+
+        // axios.get("https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=1548&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", {
+        //     responseType: 'blob'
+        // })
+        //     .then((res) => {
+        //         console.log('====================================');
+        //         console.log("RES: ", res);
+        //         console.log('====================================');
+        //         fileDownload(res.data, "downloadTest")
+        //     })
+        //     .catch((err) => {
+        //         console.log('====================================');
+        //         console.log("ERROR: ", err);
+        //         console.log('====================================');
+        //     })
     };
 
 
