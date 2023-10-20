@@ -28,7 +28,7 @@ const App = () => {
   const {
     clicks: [clicks],
     image: [, setImage],
-    maskImg: [, setMaskImg],
+    maskImg: [maskImg, setMaskImg],
     apply: [, setApply],
   } = useContext(AppContext)!;
   const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
@@ -161,6 +161,14 @@ const App = () => {
     runONNX();
   };
 
+  const downloadImage = () => {
+    console.log(`${maskImg?.src}`);
+    const link = document.createElement("a");
+    link.href = `${maskImg?.src}`;
+    link.download = "image.png";
+    link.click();
+  };
+
   return (
     <>
       <div>
@@ -195,6 +203,9 @@ const App = () => {
         <div>
           <button className="button skyblue" onClick={() => setApply(true)}>
             Apply
+          </button>
+          <button className="button skyblue" onClick={() => downloadImage()}>
+            Download mask
           </button>
         </div>
       </div>
