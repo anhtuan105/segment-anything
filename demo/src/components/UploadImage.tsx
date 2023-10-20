@@ -73,8 +73,9 @@ const UploadImage = () => {
 
 
         // helper.set_user_identification()
+        setIsSpinning(true)
 
-        axios.get("http://localhost:8001/dowload_file", {
+        axios.get("http://127.0.0.1:8001/download_file", {
             responseType: 'blob'
         })
             .then((res) => {
@@ -87,6 +88,9 @@ const UploadImage = () => {
                 console.log('====================================');
                 console.log("ERROR: ", err);
                 console.log('====================================');
+            })
+            .finally(()=>{
+                setIsSpinning(false)
             })
     };
 
