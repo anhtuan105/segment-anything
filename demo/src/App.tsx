@@ -16,33 +16,67 @@ import AppContext from "./components/hooks/createContext";
 const ort = require("onnxruntime-web");
 /* @ts-ignore */
 import npyjs from "npyjs";
+import "./Button.css"; // Import CSS
+import AppManager from "./AppManager";
+
+import UploadImage from "./components/UploadImage";
+import helper from "./components/helpers/helper";
 
 // Define image, embedding and model paths
-const IMAGE_PATH = "/assets/data/mau_text.png";
-const IMAGE_EMBEDDING = "/assets/data/mau_text.npy";
-const MODEL_DIR = "/model/mau_text.onnx";
+// const IMAGE_PATH = "/assets/data/mau_text.png";
+// const IMAGE_EMBEDDING = "/assets/data/mau_text.npy";
+// const MODEL_DIR = "/model/mau_text.onnx";
+
+let IMAGE_PATH = "/assets/data/image_upload.png";
+let IMAGE_EMBEDDING = "/assets/embedding/upload_embedding.npy";
+let MODEL_DIR = "/assets/model/upload_model.onnx";
+// Define image, embedding and model paths
+// const IMAGE_PATH = "/assets/data/mau_text.png";
+// const IMAGE_EMBEDDING = "/assets/data/mau_text.npy";
+// const MODEL_DIR = "/model/mau_text.onnx";
 
 const App = () => {
   const {
     clicks: [clicks],
     image: [, setImage],
-    maskImg: [, setMaskImg],
+    maskImg: [maskImg, setMaskImg],
+    apply: [, setApply],
   } = useContext(AppContext)!;
   const [model, setModel] = useState<InferenceSession | null>(null); // ONNX model
   const [tensor, setTensor] = useState<Tensor | null>(null); // Image embedding tensor
+  const alpha = 100;
 
-  // The ONNX model expects the input to be rescaled to 1024. 
+  const [imagePath,setImagePath] = useState(IMAGE_PATH)
+  const [imageEmbeddingPath,setImageEmbeddingPath] = useState(IMAGE_EMBEDDING)
+  const [modelOnnxPath,setModelOnnxPath] = useState(MODEL_DIR)
+
+
+  // The ONNX model expects the input to be rescaled to 1024.
   // The modelScale state variable keeps track of the scale values.
   const [modelScale, setModelScale] = useState<modelScaleProps | null>(null);
 
   // Initialize the ONNX model. load the image, and load the SAM
   // pre-computed image embedding
   useEffect(() => {
+
+    let user_id = helper.get_user_identification()
+    console.log("USER_ID : ", user_id);
+    user_id = "11"
+    // let imagePath = `/assets/data/${user_id}_image_upload.png`;
+    // let imageEmbeddingPath = `/assets/embedding/${user_id}_upload_embedding.npy`;
+    // let modelOnnxPath = `/assets/model/${user_id}_upload_model.onnx`;
+
+    // console.log("imagePath",imagePath);
+    // console.log("imageEmbeddingPath",imageEmbeddingPath);
+    // console.log("modelOnnxPath",modelOnnxPath);
+    
+
+
     // Initialize the ONNX model
     const initModel = async () => {
       try {
-        if (MODEL_DIR === undefined) return;
-        const URL: string = MODEL_DIR;
+        if (modelOnnxPath === undefined) return;
+        const URL: string = modelOnnxPath;
         const model = await InferenceSession.create(URL);
         setModel(model);
       } catch (e) {
@@ -52,11 +86,11 @@ const App = () => {
     initModel();
 
     // Load the image
-    const url = new URL(IMAGE_PATH, location.origin);
+    const url = new URL(imagePath, location.origin);
     loadImage(url);
 
     // Load the Segment Anything pre-computed embedding
-    Promise.resolve(loadNpyTensor(IMAGE_EMBEDDING, "float32")).then(
+    Promise.resolve(loadNpyTensor(imageEmbeddingPath, "float32")).then(
       (embedding) => setTensor(embedding)
     );
   }, []);
@@ -68,12 +102,12 @@ const App = () => {
       img.onload = () => {
         const { height, width, samScale } = handleImageScale(img);
         setModelScale({
-          height: height,  // original image height
-          width: width,  // original image width
+          height: height, // original image height
+          width: width, // original image width
           samScale: samScale, // scaling factor for image which has been resized to longest side 1024
         });
-        img.width = width; 
-        img.height = height; 
+        img.width = width;
+        img.height = height;
         setImage(img);
       };
     } catch (error) {
@@ -81,7 +115,7 @@ const App = () => {
     }
   };
 
-  // Decode a Numpy file into a tensor. 
+  // Decode a Numpy file into a tensor.
   const loadNpyTensor = async (tensorFile: string, dType: string) => {
     let npLoader = new npyjs();
     const npArray = await npLoader.load(tensorFile);
@@ -104,7 +138,7 @@ const App = () => {
       )
         return;
       else {
-        // Preapre the model input in the correct format for SAM. 
+        // Preapre the model input in the correct format for SAM.
         // The modelData function is from onnxModelAPI.tsx.
         const feeds = modelData({
           clicks,
@@ -115,16 +149,101 @@ const App = () => {
         // Run the SAM ONNX model with the feeds returned from modelData()
         const results = await model.run(feeds);
         const output = results[model.outputNames[0]];
-        // The predicted mask returned from the ONNX model is an array which is 
+        // The predicted mask returned from the ONNX model is an array which is
         // rendered as an HTML image using onnxMaskToImage() from maskUtils.tsx.
-        setMaskImg(onnxMaskToImage(output.data, output.dims[2], output.dims[3]));
+        setMaskImg(
+          onnxMaskToImage(output.data, output.dims[2], output.dims[3])
+        );
       }
     } catch (e) {
       console.log(e);
     }
   };
 
-  return <Stage />;
+  const onSelectColor = (index: number) => {
+    let color = [0, 128, 0, alpha];
+    switch (index) {
+      case 0:
+        color = [0, 128, 0, alpha];
+        break;
+      case 1:
+        color = [255, 255, 0, alpha];
+        break;
+      case 2:
+        color = [255, 0, 0, alpha];
+        break;
+      case 3:
+        color = [135, 206, 235, alpha];
+        break;
+      case 4:
+        color = [128, 0, 128, alpha];
+        break;
+      case 5:
+        color = [255, 192, 203, alpha];
+        break;
+      case 6:
+        color = [0, 0, 0, 255];
+        break;
+      default:
+        break;
+    }
+    AppManager.shared.color = color;
+    runONNX();
+  };
+
+  const downloadImage = () => {
+    console.log(`${maskImg?.src}`);
+    const link = document.createElement("a");
+    link.href = `${maskImg?.src}`;
+    link.download = "image.png";
+    link.click();
+    setMaskImg(null);
+  };
+
+  return (
+    <>
+      <div>
+        <button
+          className="button green"
+          onClick={() => onSelectColor(0)}
+        ></button>
+        <button
+          className="button yellow"
+          onClick={() => onSelectColor(1)}
+        ></button>
+        <button
+          className="button red"
+          onClick={() => onSelectColor(2)}
+        ></button>
+        <button
+          className="button skyblue"
+          onClick={() => onSelectColor(3)}
+        ></button>
+        <button
+          className="button purple"
+          onClick={() => onSelectColor(4)}
+        ></button>
+        <button
+          className="button pink"
+          onClick={() => onSelectColor(5)}
+        ></button>
+        <button
+          className="button black"
+          onClick={() => onSelectColor(6)}
+        ></button>
+        <div>
+          <button className="button skyblue" onClick={() => setApply(true)}>
+            Apply
+          </button>
+          <button className="button skyblue" onClick={() => downloadImage()}>
+            Download mask
+          </button>
+          <UploadImage/>
+        </div>
+      </div>
+      <Stage />;
+    </>
+  );
 };
 
 export default App;

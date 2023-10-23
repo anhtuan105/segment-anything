@@ -6,7 +6,7 @@
     "build": "yarn run clean-dist && webpack --config=configs/webpack/prod.js && mv dist/*.wasm dist/js",
     "clean-dist": "rimraf dist/*",
     "lint": "eslint './src/**/*.{js,ts,tsx}' --quiet",
-    "start": "yarn run start-dev",
+    "start": "yarn run start-dev --port 8002",
     "test": "yarn run start-model-test",
     "start-dev": "webpack serve --config=configs/webpack/dev.js"
   },
@@ -52,11 +52,16 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "antd": "^5.10.1",
+    "axios": "^1.5.1",
+    "js-file-download": "^0.4.12",
     "npyjs": "^0.4.0",
     "onnxruntime-web": "^1.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-refresh": "^0.14.0",
+    "reimg": "^1.0.0",
     "underscore": "^1.13.6",
-    "react-refresh": "^0.14.0"
+    "uuidv4": "^6.2.13"
   }
 }
