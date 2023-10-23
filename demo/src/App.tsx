@@ -238,6 +238,7 @@ const App = () => {
           <button className="button skyblue" onClick={() => downloadImage()}>
             Download mask
           </button>
+          <UploadImage/>
         </div>
       </div>
       <Stage />;
