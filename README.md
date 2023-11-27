@@ -1,3 +1,18 @@
+# Flydino run server
+cd segment-anything/demo
+pm2 start yarn --name segment-ui -- start 
+
+PYTHON : 
+cd segment-anything
+pm2 --name=segment-server start "uvicorn main:app --host 0.0.0.0 --port 8001"
+
+cd Lang-Segnment-Anything
+pm2 --name=lang-segment-server start "uvicorn main:app --host 0.0.0.0 --port 8000"
+
+
+
+
+
 # Segment Anything
 
 **[Meta AI Research, FAIR](https://ai.facebook.com/research/)**
